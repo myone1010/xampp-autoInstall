@@ -64,7 +64,7 @@ def download_file(url, dest_folder):
         previous_progress = -1
         
         # Open the destination file in binary write mode
-        print(f"{GREEN}---------------Downloading Xampp --version 5.6.40------------------{RESET}")
+        print(f"{GREEN}---------------Downloading Xampp --version 5.6.32------------------{RESET}")
         with open(os.path.join(dest_folder, url.split("/")[-1]), 'wb') as f:
             # Iterate over the response content and write to file
             for chunk in response.iter_content(chunk_size=1024):
@@ -86,11 +86,10 @@ def install_xampp_silent(command):
     try:
         # Launch PowerShell as administrator and execute the command
         process = subprocess.run(["powershell", "-Command", f"Start-Process powershell -Verb runAs -Wait -ArgumentList '-NoProfile','-Command \"{command}\"'"], check=True)
+        print(f"{GREEN}-----------xampp has installed successfully.------------{RESET}")
     except subprocess.CalledProcessError:
         print(f"{RED}---------------Failed to execute PowerShell command-------------{RESET}")
-        input()
-    else:
-        print(f"{GREEN}-----------xampp has installed successfully.------------{RESET}")
+       
         
 
 def is_target_file(search_folder_path, target_folder_path):
@@ -210,8 +209,6 @@ def create_database(host, user, database_name):
 
     except mysql.connector.Error as error:
         print("--------------Reconnecting to Mysql-----------")
-        time.sleep(1)
-        create_database(host, user, database_name)
         print(f"{RED}Failed to create database:", error)
 
     finally:
@@ -297,7 +294,7 @@ def create_startup_task(task_name, executable_path):
 
 def config_env():
     # URL of the XAMPP installer
-    url = "https://deac-fra.dl.sourceforge.net/project/xampp/XAMPP%20Windows/5.6.40/xampp-windows-x64-5.6.40-1-VC11-installer.exe"
+    url = "https://deac-fra.dl.sourceforge.net/project/xampp/XAMPP%20Windows/5.6.32/xampp-win32-5.6.32-0-VC11-installer.exe"
     
     global RED, GREEN, RESET
     RED = '\033[31m'  # Red text
@@ -328,12 +325,11 @@ def config_env():
 
     
     # Download the file
-        if is_target_file(script_dir, "xampp-windows-x64-5.6.40-1-VC11-installer.exe"):
-            downloaded_file_path = f"{script_dir}/xampp-windows-x64-5.6.40-1-VC11-installer.exe"
+        if is_target_file(script_dir, "xampp-win32-5.6.32-0-VC11-installer.exe"):
+            downloaded_file_path = f"{script_dir}/xampp-win32-5.6.32-0-VC11-installer.exe"
             print("---------------xampp is already downloaded--------------------")
         else:
             downloaded_file_path = download_file(url, script_dir)
-        # downloaded_file_path = f"{script_dir}/xampp-windows-x64-5.6.40-1-VC11-installer.exe"
         print("xampp is installing...")
         powershell_command = f"{downloaded_file_path} --mode unattended"
         install_xampp_silent(powershell_command)
@@ -349,12 +345,12 @@ def config_env():
     apache_config_path = f"C:/xampp/apache/conf/httpd.conf"
 
     # Modify the .conf file
-    try:
-        modify_conf_file(apache_config_path)
-    except:
-        print("-------Modify localhost has been failed------------")
-    else:
-        print(f"{GREEN}------wpv_mactos has been set as the localhost-------------{RESET}")
+    # try:
+    #     modify_conf_file(apache_config_path)
+    # except:
+    #     print("-------Modify localhost has been failed------------")
+    # else:
+    #     print(f"{GREEN}------wpv_mactos has been set as the localhost-------------{RESET}")
 
     set_xampp_services_autostart(f'C:\\xampp\\xampp-control.ini')
     
@@ -378,8 +374,6 @@ def config_env():
         print("The sql file exists.")
     else:
         print(f"{RED}The sql file doesn't exist. Please copy the file in the same directory as exe file")
-
-
     
     
     sql_file = f"{script_dir}/db.sql"
@@ -410,7 +404,6 @@ def config_env():
     # time.sleep(3)
 
     task_name = "xampp"
-    program_name = "xampp-control"
     executable_path = f"C:/xampp/xampp-control.exe"
     
     if is_process_running_with_text(task_name):
@@ -441,16 +434,17 @@ def draw_interface():
     introduction_text2 = f"Copy db.sql file in the same directory as the exe file.\n  The name has to be correct".rjust(10)
     introduction_text3 = f"Copy config folder in the same directory as the exe file.".rjust(10)
     introduction_text4 = f"You can start the app on browser:".rjust(10)
-    introduction_text5 = f"'localhost/'"
+    introduction_text5 = f"'https://localhost/wpv_mactos'"
     introduction_box.insert(tk.END, f"\nCommand 1:\n {introduction_text1}\n\nCommand 2:\n {introduction_text2}\n\nCommand 3:\n {introduction_text3}\n\nCommand 4:\n {introduction_text4}\n {introduction_text5}")
     introduction_box.tag_config("redtext", foreground="red")
     introduction_box.tag_add("redtext", "2.0", "2.10", "6.0", "6.10", "10.0", "10.10", "13.0", "13.10")
     introduction_box.tag_config("greentext", foreground="green")
-    introduction_box.tag_add("greentext", "3.6", "3.23", "3.27", "3.41", "7.6", "7.17", "11.6", "11.19", "15.1", "15.24")
+    introduction_box.tag_add("greentext", "3.6", "3.23", "3.27", "3.41", "7.6", "7.17", "11.6", "11.19", "15.1", "15.31")
     introduction_box.config(state="disabled")
     introduction_box.place(x=30, y=45)
     # Create a button
     button = tk.Button(root, text="Start Configuration", command=config_env)
+
     button.place(x=350, y=350)
     root.mainloop()
 
